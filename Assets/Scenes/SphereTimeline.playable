@@ -1,81 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3908247503524510578
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6308c99bb33e82943ae178e4ea896efa, type: 3}
-  m_Name: TimelineControlClip
-  m_EditorClassIdentifier: 
-  Marker: 0
-  Label: 
-  Controller: 1
-  ControlType: 0
-  JumpFrame: 0
-  JumpLabel: 
-  Condition: 0
-  trackBinding: {fileID: 0}
-  condition_index: 0
-  float_enum: 0
-  float_val: 0
-  int_enum: 0
-  int_val: 0
-  bool_enum: 0
-  conditionName: 
-  onEnter:
-    register: 0
-    selectIndex: 0
-    methodName: None
-    clipParamIndex: -1
-    otherParamType: 0
-    strVal: 
-    intVal: 0
-    floatVal: 0
-    boolVal: 0
-    enumTypeName: 
-    enumIndexVal: 0
-  onFrame:
-    register: 1
-    selectIndex: 0
-    methodName: None
-    clipParamIndex: -1
-    otherParamType: 0
-    strVal: 
-    intVal: 0
-    floatVal: 0
-    boolVal: 0
-    enumTypeName: 
-    enumIndexVal: 0
-  onTrigger:
-    register: 0
-    selectIndex: 0
-    methodName: None
-    clipParamIndex: -1
-    otherParamType: 0
-    strVal: 
-    intVal: 0
-    floatVal: 0
-    boolVal: 0
-    enumTypeName: 
-    enumIndexVal: 0
-  onPass:
-    register: 0
-    selectIndex: 0
-    methodName: None
-    clipParamIndex: -1
-    otherParamType: 0
-    strVal: 
-    intVal: 0
-    floatVal: 0
-    boolVal: 0
-    enumTypeName: 
-    enumIndexVal: 0
---- !u!114 &-3254465565811365877
+--- !u!114 &-5644108654457559362
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,12 +22,12 @@ MonoBehaviour:
   m_Children: []
   m_Clips:
   - m_Version: 1
-    m_Start: 1.0666666666666667
+    m_Start: 1.1666666666666667
     m_ClipIn: 0
-    m_Asset: {fileID: -3908247503524510578}
-    m_Duration: 2.2
+    m_Asset: {fileID: 3161536900897636104}
+    m_Duration: 3.720118533757825
     m_TimeScale: 1
-    m_ParentTrack: {fileID: -3254465565811365877}
+    m_ParentTrack: {fileID: -5644108654457559362}
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
     m_BlendInDuration: 0
@@ -182,7 +107,7 @@ MonoBehaviour:
   m_Version: 0
   m_Tracks:
   - {fileID: 7882611205794989707}
-  - {fileID: -3254465565811365877}
+  - {fileID: -5644108654457559362}
   m_FixedDuration: 0
   m_EditorSettings:
     m_Framerate: 60
@@ -233,6 +158,81 @@ MonoBehaviour:
   m_Clips: []
   m_Markers:
     m_Objects: []
+--- !u!114 &3161536900897636104
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6308c99bb33e82943ae178e4ea896efa, type: 3}
+  m_Name: TimelineControlClip
+  m_EditorClassIdentifier: 
+  Marker: 0
+  Label: 
+  Controller: 1
+  ControlType: 1
+  JumpFrame: 0
+  JumpLabel: 
+  Condition: 1
+  trackBinding: {fileID: 0}
+  condition_index: 0
+  float_enum: 0
+  float_val: 0
+  int_enum: 0
+  int_val: 0
+  bool_enum: 1
+  conditionName: Pass
+  onEnter:
+    register: 1
+    selectIndex: 0
+    methodName: None
+    clipParamIndex: -1
+    otherParamType: 0
+    strVal: 
+    intVal: 0
+    floatVal: 0
+    boolVal: 1
+    enumTypeName: 
+    enumIndexVal: 0
+  onFrame:
+    register: 0
+    selectIndex: 0
+    methodName: None
+    clipParamIndex: -1
+    otherParamType: 0
+    strVal: 
+    intVal: 0
+    floatVal: 0
+    boolVal: 0
+    enumTypeName: 
+    enumIndexVal: 0
+  onTrigger:
+    register: 1
+    selectIndex: 2
+    methodName: set_Pass
+    clipParamIndex: -1
+    otherParamType: 4
+    strVal: 
+    intVal: 0
+    floatVal: 0
+    boolVal: 1
+    enumTypeName: 
+    enumIndexVal: 0
+  onPass:
+    register: 0
+    selectIndex: 0
+    methodName: None
+    clipParamIndex: -1
+    otherParamType: 0
+    strVal: 
+    intVal: 0
+    floatVal: 0
+    boolVal: 0
+    enumTypeName: 
+    enumIndexVal: 0
 --- !u!74 &3670164051162528936
 AnimationClip:
   m_ObjectHideFlags: 0
