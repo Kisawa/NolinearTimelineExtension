@@ -32,6 +32,8 @@ namespace UnityEngine.Timeline
         GUIContent triggerEvent = new GUIContent("On Trigger", "Register an event for the clip controller triggering.");
         GUIContent passEvent = new GUIContent("On Pass", "Register an event for the clip pass.");
         GUIContent frameEvent = new GUIContent("On Frame", "Register an event for the clip every frame.");
+        GUIContent conditionDetail = new GUIContent("The condition support fields and property, and have to mark [Condition] attribute.");
+        GUIContent eventDetail = new GUIContent("The method have three ways to carry parameters below: \n  just null \n  one parameter that type of string, float, int, bool, enum or self clip \n  two parameters and must with one self clip parameter");
 
         SerializedProperty condition_index;
         SerializedProperty float_enum;
@@ -158,6 +160,13 @@ namespace UnityEngine.Timeline
                     EditorGUILayout.EndToggleGroup();
                     EditorGUILayout.EndVertical();
                     EditorGUILayout.EndHorizontal();
+                    if (!m_Condition.boolValue)
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.Space(15, false);
+                        EditorGUILayout.HelpBox(conditionDetail);
+                        EditorGUILayout.EndHorizontal();
+                    }
                 }
                 else 
                 {
@@ -173,10 +182,10 @@ namespace UnityEngine.Timeline
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            if (m_trackBinding.objectReferenceValue != null) 
+            if (m_trackBinding.objectReferenceValue != null)
             {
                 MethodInfo[] methods = m_trackBinding.objectReferenceValue.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-                if (methods.Length > 0) 
+                if (methods.Length > 0)
                 {
                     List<(string, int, Type)> canUseMethods = new List<(string, int, Type)>();
                     canUseMethods.Add(("None", -1, null));
@@ -184,6 +193,8 @@ namespace UnityEngine.Timeline
                     {
                         MethodInfo method = methods[i];
                         ParameterInfo[] parameters = method.GetParameters();
+                        if (method.IsSpecialName)
+                            continue;
                         if (parameters.Length == 0)
                             canUseMethods.Add((method.Name, -1, null));
                         else if (parameters.Length == 1)
@@ -233,10 +244,16 @@ namespace UnityEngine.Timeline
                     initEventGUI(passEvent, onPass, canUseMethods, names);
                 }
                 else
+                {
                     EditorGUILayout.HelpBox("No function", MessageType.None);
+                    EditorGUILayout.HelpBox(eventDetail);
+                }
             }
             else
+            {
                 EditorGUILayout.HelpBox("No function", MessageType.None);
+                EditorGUILayout.HelpBox(eventDetail);
+            }
             
             timelineControlCilp.ApplyModifiedProperties();
         }

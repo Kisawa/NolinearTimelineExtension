@@ -323,7 +323,7 @@ GameObject:
   - component: {fileID: 835391619}
   - component: {fileID: 835391618}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: ViewTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -341,6 +341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f98dea3040715941914a99e6018b154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  condition: 0
 --- !u!95 &835391619
 Animator:
   serializedVersion: 3

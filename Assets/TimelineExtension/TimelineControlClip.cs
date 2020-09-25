@@ -96,14 +96,14 @@ namespace UnityEngine.Timeline
 #endif
     }
 
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+    public class ConditionAttribute : Attribute { }
+
     public enum TimelineControlOperationType { Pause, Repeat, JumpToFrame, JumpToMarker }
 
     public enum floatEnum { Greater, Less }
     public enum boolEnum { True, Flase }
     public enum intEnum { Greater, Less, Equals, NotEquals }
-
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-    public class ConditionAttribute : Attribute { }
 
     [Serializable]
     struct clipEventData

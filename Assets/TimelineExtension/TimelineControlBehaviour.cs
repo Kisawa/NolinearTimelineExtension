@@ -12,6 +12,10 @@ namespace UnityEngine.Timeline
             MonoBehaviour trackBinding;
             PlayableDirector director;
             Func<bool> condition = () => false;
+            (MethodInfo, object[]) onEnter;
+            (MethodInfo, object[]) onFrame;
+            (MethodInfo, object[]) onTrigger;
+            (MethodInfo, object[]) onPass;
 
             public override void OnGraphStart(Playable playable)
             {
@@ -19,17 +23,22 @@ namespace UnityEngine.Timeline
                 foreach (var item in clip.track.outputs)
                     trackBinding = director.GetGenericBinding(item.sourceObject) as MonoBehaviour;
                 initCondition();
+                onEnter = initBindingMethod(clip.onEnter);
+                onFrame = initBindingMethod(clip.onFrame);
+                onTrigger = initBindingMethod(clip.onTrigger);
+                onPass = initBindingMethod(clip.onPass);
             }
 
             public override void OnBehaviourPlay(Playable playable, FrameData info)
             {
                 base.OnBehaviourPlay(playable, info);
-                invokeBindingFunc(clip.onEnter);
+                if (Math.Abs(playable.GetTime()) < 0.01f)
+                    invokeBindingMethod(onEnter);
             }
 
             public override void OnBehaviourPause(Playable playable, FrameData info)
             {
-                if (Math.Abs(playable.GetTime() - playable.GetDuration()) < 0.000001f)
+                if (Math.Abs(playable.GetTime() - playable.GetDuration()) < 0.01f)
                 {
                     if (condition())
                     {
@@ -56,10 +65,10 @@ namespace UnityEngine.Timeline
                                 }
                                 break;
                         }
-                        invokeBindingFunc(clip.onTrigger);
+                        invokeBindingMethod(onTrigger);
                         return;
                     }
-                    invokeBindingFunc(clip.onPass);
+                    invokeBindingMethod(onPass);
                 }
             }
 
@@ -67,25 +76,31 @@ namespace UnityEngine.Timeline
             {
                 base.ProcessFrame(playable, info, playerData);
                 trackBinding = playerData as TimelineController;
-                invokeBindingFunc(clip.onFrame);
+                invokeBindingMethod(onFrame);
             }
 
-            void invokeBindingFunc(clipEventData eventData)
+            void invokeBindingMethod((MethodInfo, object[]) data) 
+            {
+                if (trackBinding != null && data.Item1 != null) 
+                {
+                    data.Item1.Invoke(trackBinding, data.Item2);
+                }
+            }
+
+            (MethodInfo, object[]) initBindingMethod(clipEventData eventData)
             {
                 if (trackBinding != null && eventData.register && eventData.selectIndex > 0) 
                 {
-                    MethodInfo method = null;
                     if (eventData.clipParamIndex == -1)
                     {
                         if (eventData.otherParamType == clipEventParamType.None)
                         {
-                            method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { }, null);
-                            if (method != null)
-                                method.Invoke(trackBinding, null);
+                            MethodInfo method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { }, null);
+                            return (method, null);
                         }
                         else
                         {
-                            method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { eventData.OtherParamType }, null);
+                            MethodInfo method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { eventData.OtherParamType }, null);
                             if (method != null)
                             {
                                 object[] objs = new object[1];
@@ -107,7 +122,7 @@ namespace UnityEngine.Timeline
                                         objs[0] = Enum.GetValues(eventData.OtherParamType).GetValue(eventData.enumIndexVal);
                                         break;
                                 }
-                                method.Invoke(trackBinding, objs);
+                                return (method, objs);
                             }
                         }
                     }
@@ -115,15 +130,12 @@ namespace UnityEngine.Timeline
                     {
                         if (eventData.otherParamType == clipEventParamType.None)
                         {
-                            method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { typeof(TimelineControlClip) }, null);
-                            if (method != null)
-                            {
-                                method.Invoke(trackBinding, new object[] { clip });
-                            }
+                            MethodInfo method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { typeof(TimelineControlClip) }, null);
+                            return (method, new object[] { clip });
                         }
                         else
                         {
-                            method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { typeof(TimelineControlClip), eventData.OtherParamType }, null);
+                            MethodInfo method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { typeof(TimelineControlClip), eventData.OtherParamType }, null);
                             if (method != null)
                             {
                                 object[] objs = new object[2];
@@ -146,7 +158,7 @@ namespace UnityEngine.Timeline
                                         objs[1] = Enum.GetValues(eventData.OtherParamType).GetValue(eventData.enumIndexVal);
                                         break;
                                 }
-                                method.Invoke(trackBinding, objs);
+                                return (method, objs);
                             }
                         }
                     }
@@ -154,7 +166,7 @@ namespace UnityEngine.Timeline
                     {
                         if (eventData.otherParamType != clipEventParamType.None)
                         {
-                            method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { eventData.OtherParamType, typeof(TimelineControlClip) }, null);
+                            MethodInfo method = trackBinding.GetType().GetMethod(eventData.methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, new Type[] { eventData.OtherParamType, typeof(TimelineControlClip) }, null);
                             if (method != null)
                             {
                                 object[] objs = new object[2];
@@ -177,11 +189,12 @@ namespace UnityEngine.Timeline
                                         objs[0] = Enum.GetValues(eventData.OtherParamType).GetValue(eventData.enumIndexVal);
                                         break;
                                 }
-                                method.Invoke(trackBinding, objs);
+                                return (method, objs);
                             }
                         }
                     }
                 }
+                return (null, null);
             }
 
             void initCondition()
