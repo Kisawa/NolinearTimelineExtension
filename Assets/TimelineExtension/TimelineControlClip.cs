@@ -19,7 +19,7 @@ namespace UnityEngine.Timeline
         public bool Condition;
 
         #region EditorUes
-        TimelineControlTrack track;
+        [SerializeField] TimelineControlTrack track;
         [SerializeField] MonoBehaviour trackBinding;
         [SerializeField] int condition_index;
         [SerializeField] floatEnum float_enum;

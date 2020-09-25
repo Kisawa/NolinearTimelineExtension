@@ -32,7 +32,7 @@ namespace UnityEngine.Timeline
         GUIContent triggerEvent = new GUIContent("On Trigger", "Register an event for the clip controller triggering.");
         GUIContent passEvent = new GUIContent("On Pass", "Register an event for the clip pass.");
         GUIContent frameEvent = new GUIContent("On Frame", "Register an event for the clip every frame.");
-        GUIContent conditionDetail = new GUIContent("The condition support fields and property, and have to mark [Condition] attribute.");
+        GUIContent conditionDetail = new GUIContent("The condition support field and property, and have to mark [Condition] attribute.");
         GUIContent eventDetail = new GUIContent("The method have three ways to carry parameters below: \n  just null \n  one parameter that type of string, float, int, bool, enum or self clip \n  two parameters and must with one self clip parameter");
 
         SerializedProperty condition_index;
