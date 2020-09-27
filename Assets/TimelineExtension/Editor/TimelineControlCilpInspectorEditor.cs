@@ -9,9 +9,21 @@ using UnityEngine;
 namespace UnityEngine.Timeline 
 {
     [CustomEditor(typeof(TimelineControlClip))]
-    public class TimelineControlCilpInspectorEditor : Editor
+    public sealed class TimelineControlCilpInspectorEditor : Editor
     {
-        SerializedObject timelineControlCilp;
+        static readonly GUIContent marker = new GUIContent("Marker", "Mark on this cilp.");
+        static readonly GUIContent controller = new GUIContent("Controller", "Open the control.");
+        static readonly GUIContent controllerType = new GUIContent("Control Type", "Select a control mode.");
+        static readonly GUIContent controllTimingType = new GUIContent("Control Timing Type", "Select the controller's timing of trigger");
+        static readonly GUIContent jumpFrame = new GUIContent("Jump Frame", "Jump to a frame.");
+        static readonly GUIContent jumpLabel = new GUIContent("Jump Label", "Jump to a marker with label.");
+        static readonly GUIContent condition = new GUIContent("Condition", "Open condition control. Supported types: float, int and bool.");
+        static readonly GUIContent enterEvent = new GUIContent("On Enter", "Register an event for the clip start.");
+        static readonly GUIContent triggerEvent = new GUIContent("On Trigger", "Register an event for the clip controller triggering.");
+        static readonly GUIContent passEvent = new GUIContent("On Pass", "Register an event for the clip pass.");
+        static readonly GUIContent frameEvent = new GUIContent("On Frame", "Register an event for the clip every frame.");
+        static readonly GUIContent conditionDetail = new GUIContent("The condition support field and property, and have to mark [Condition] attribute.");
+        static readonly GUIContent eventDetail = new GUIContent("The method have three ways to carry parameters below: \n  just null \n  one parameter that type of string, float, int, bool, enum or self clip \n  two parameters and must with one self clip parameter");
 
         SerializedProperty m_Marker;
         SerializedProperty m_Label;
@@ -22,20 +34,6 @@ namespace UnityEngine.Timeline
         SerializedProperty m_JumpLabel;
         SerializedProperty m_Condition;
         SerializedProperty m_trackBinding;
-
-        GUIContent marker = new GUIContent("Marker", "Mark on this cilp.");
-        GUIContent controller = new GUIContent("Controller", "Open the control.");
-        GUIContent controllerType = new GUIContent("Control Type", "Select a control mode.");
-        GUIContent controllTimingType = new GUIContent("Control Timing Type", "Select the controller's timing of trigger");
-        GUIContent jumpFrame = new GUIContent("Jump Frame", "Jump to a frame.");
-        GUIContent jumpLabel = new GUIContent("Jump Label", "Jump to a marker with label.");
-        GUIContent condition = new GUIContent("Condition", "Open condition control. Supported types: float, int and bool.");
-        GUIContent enterEvent = new GUIContent("On Enter", "Register an event for the clip start.");
-        GUIContent triggerEvent = new GUIContent("On Trigger", "Register an event for the clip controller triggering.");
-        GUIContent passEvent = new GUIContent("On Pass", "Register an event for the clip pass.");
-        GUIContent frameEvent = new GUIContent("On Frame", "Register an event for the clip every frame.");
-        GUIContent conditionDetail = new GUIContent("The condition support field and property, and have to mark [Condition] attribute.");
-        GUIContent eventDetail = new GUIContent("The method have three ways to carry parameters below: \n  just null \n  one parameter that type of string, float, int, bool, enum or self clip \n  two parameters and must with one self clip parameter");
 
         SerializedProperty condition_index;
         SerializedProperty float_enum;
@@ -54,34 +52,33 @@ namespace UnityEngine.Timeline
         {
             if (target == null)
                 return;
-            timelineControlCilp = new SerializedObject(target);
-            m_Marker = timelineControlCilp.FindProperty("Marker");
-            m_Label = timelineControlCilp.FindProperty("Label");
-            m_Controller = timelineControlCilp.FindProperty("Controller");
-            m_ControlTimingType = timelineControlCilp.FindProperty("ControlTimingType");
-            m_ControlType = timelineControlCilp.FindProperty("ControlType");
-            m_JumpFrame = timelineControlCilp.FindProperty("JumpFrame");
-            m_JumpLabel = timelineControlCilp.FindProperty("JumpLabel");
-            m_Condition = timelineControlCilp.FindProperty("Condition");
-            m_trackBinding = timelineControlCilp.FindProperty("trackBinding");
+            m_Marker = serializedObject.FindProperty("Marker");
+            m_Label = serializedObject.FindProperty("Label");
+            m_Controller = serializedObject.FindProperty("Controller");
+            m_ControlTimingType = serializedObject.FindProperty("ControlTimingType");
+            m_ControlType = serializedObject.FindProperty("ControlType");
+            m_JumpFrame = serializedObject.FindProperty("JumpFrame");
+            m_JumpLabel = serializedObject.FindProperty("JumpLabel");
+            m_Condition = serializedObject.FindProperty("Condition");
+            m_trackBinding = serializedObject.FindProperty("trackBinding");
 
-            condition_index = timelineControlCilp.FindProperty("condition_index");
-            float_enum = timelineControlCilp.FindProperty("float_enum");
-            float_val = timelineControlCilp.FindProperty("float_val"); 
-            int_enum = timelineControlCilp.FindProperty("int_enum");
-            int_val = timelineControlCilp.FindProperty("int_val");
-            bool_enum = timelineControlCilp.FindProperty("bool_enum");
-            conditionName = timelineControlCilp.FindProperty("conditionName");
+            condition_index = serializedObject.FindProperty("condition_index");
+            float_enum = serializedObject.FindProperty("float_enum");
+            float_val = serializedObject.FindProperty("float_val"); 
+            int_enum = serializedObject.FindProperty("int_enum");
+            int_val = serializedObject.FindProperty("int_val");
+            bool_enum = serializedObject.FindProperty("bool_enum");
+            conditionName = serializedObject.FindProperty("conditionName");
 
-            onEnter = timelineControlCilp.FindProperty("onEnter");
-            onFrame = timelineControlCilp.FindProperty("onFrame");
-            onTrigger = timelineControlCilp.FindProperty("onTrigger");
-            onPass = timelineControlCilp.FindProperty("onPass");
+            onEnter = serializedObject.FindProperty("onEnter");
+            onFrame = serializedObject.FindProperty("onFrame");
+            onTrigger = serializedObject.FindProperty("onTrigger");
+            onPass = serializedObject.FindProperty("onPass");
         }
 
         public override void OnInspectorGUI()
         {
-            timelineControlCilp.Update();
+            serializedObject.Update();
 
             m_Marker.boolValue = EditorGUILayout.BeginToggleGroup(marker, m_Marker.boolValue);
             EditorGUILayout.PropertyField(m_Label);
@@ -268,7 +265,7 @@ namespace UnityEngine.Timeline
                 EditorGUILayout.HelpBox(eventDetail);
             }
             
-            timelineControlCilp.ApplyModifiedProperties();
+            serializedObject.ApplyModifiedProperties();
         }
 
         void initEventGUI(GUIContent content, SerializedProperty eventProperty, List<(string, int, Type)> canUseMethods, string[] viewNames) 
