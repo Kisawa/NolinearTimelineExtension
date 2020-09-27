@@ -17,6 +17,7 @@ namespace UnityEngine.Timeline
         SerializedProperty m_Label;
         SerializedProperty m_Controller;
         SerializedProperty m_ControlType;
+        SerializedProperty m_ControlTimingType;
         SerializedProperty m_JumpFrame;
         SerializedProperty m_JumpLabel;
         SerializedProperty m_Condition;
@@ -25,6 +26,7 @@ namespace UnityEngine.Timeline
         GUIContent marker = new GUIContent("Marker", "Mark on this cilp.");
         GUIContent controller = new GUIContent("Controller", "Open the control.");
         GUIContent controllerType = new GUIContent("Control Type", "Select a control mode.");
+        GUIContent controllTimingType = new GUIContent("Control Timing Type", "Select the controller's timing of trigger");
         GUIContent jumpFrame = new GUIContent("Jump Frame", "Jump to a frame.");
         GUIContent jumpLabel = new GUIContent("Jump Label", "Jump to a marker with label.");
         GUIContent condition = new GUIContent("Condition", "Open condition control. Supported types: float, int and bool.");
@@ -56,6 +58,7 @@ namespace UnityEngine.Timeline
             m_Marker = timelineControlCilp.FindProperty("Marker");
             m_Label = timelineControlCilp.FindProperty("Label");
             m_Controller = timelineControlCilp.FindProperty("Controller");
+            m_ControlTimingType = timelineControlCilp.FindProperty("ControlTimingType");
             m_ControlType = timelineControlCilp.FindProperty("ControlType");
             m_JumpFrame = timelineControlCilp.FindProperty("JumpFrame");
             m_JumpLabel = timelineControlCilp.FindProperty("JumpLabel");
@@ -84,11 +87,23 @@ namespace UnityEngine.Timeline
             EditorGUILayout.PropertyField(m_Label);
             EditorGUILayout.EndToggleGroup();
 
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
+            EditorGUILayout.Space(20);
 
             m_Controller.boolValue = EditorGUILayout.BeginToggleGroup(controller, m_Controller.boolValue);
-            EditorGUILayout.PropertyField(m_ControlType, controllerType);
+
+            if (m_ControlTimingType.enumValueIndex == 2)
+            {
+                string[] typeNames = m_ControlType.enumNames;
+                typeNames[1] = null;
+                if (m_ControlType.enumValueIndex == 1)
+                    m_ControlType.enumValueIndex = 0;
+                m_ControlType.enumValueIndex = EditorGUILayout.Popup(controllerType, m_ControlType.enumValueIndex, typeNames);
+            }
+            else
+            {
+                EditorGUILayout.PropertyField(m_ControlType, controllerType);
+            }
+            EditorGUILayout.PropertyField(m_ControlTimingType, controllTimingType);
             if(m_ControlType.enumValueIndex == 2)
                 EditorGUILayout.PropertyField(m_JumpFrame, jumpFrame);
             if(m_ControlType.enumValueIndex == 3)
@@ -178,9 +193,7 @@ namespace UnityEngine.Timeline
             }
             EditorGUILayout.EndToggleGroup();
 
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
+            EditorGUILayout.Space(30);
 
             if (m_trackBinding.objectReferenceValue != null)
             {

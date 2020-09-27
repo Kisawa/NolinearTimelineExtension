@@ -22,10 +22,10 @@ MonoBehaviour:
   m_Children: []
   m_Clips:
   - m_Version: 1
-    m_Start: 1.4666666666666666
+    m_Start: 1.1
     m_ClipIn: 0
     m_Asset: {fileID: 4924211320304938529}
-    m_Duration: 3.216666666666667
+    m_Duration: 1.1
     m_TimeScale: 1
     m_ParentTrack: {fileID: -5644108654457559362}
     m_EaseInDuration: 0
@@ -341,7 +341,8 @@ MonoBehaviour:
   Label: 
   Controller: 1
   ControlType: 1
-  JumpFrame: 0
+  ControlTimingType: 0
+  JumpFrame: 180
   JumpLabel: 
   Condition: 0
   track: {fileID: -5644108654457559362}
@@ -351,15 +352,15 @@ MonoBehaviour:
   float_val: 0
   int_enum: 0
   int_val: 0
-  bool_enum: 0
+  bool_enum: 1
   conditionName: condition
   onEnter:
     register: 0
-    selectIndex: 0
-    methodName: None
+    selectIndex: 1
+    methodName: Enter
     clipParamIndex: -1
-    otherParamType: 0
-    strVal: 
+    otherParamType: 1
+    strVal: asd
     intVal: 0
     floatVal: 0
     boolVal: 0
@@ -367,10 +368,10 @@ MonoBehaviour:
     enumIndexVal: 0
   onFrame:
     register: 0
-    selectIndex: 0
-    methodName: None
+    selectIndex: 2
+    methodName: Frame
     clipParamIndex: -1
-    otherParamType: 0
+    otherParamType: 2
     strVal: 
     intVal: 0
     floatVal: 0
@@ -391,15 +392,15 @@ MonoBehaviour:
     enumIndexVal: 0
   onPass:
     register: 0
-    selectIndex: 0
-    methodName: None
+    selectIndex: 4
+    methodName: Pass
     clipParamIndex: -1
-    otherParamType: 0
+    otherParamType: 5
     strVal: 
     intVal: 0
     floatVal: 0
     boolVal: 0
-    enumTypeName: 
+    enumTypeName: UnityEngine.Timeline.testEnum
     enumIndexVal: 0
 --- !u!114 &7882611205794989707
 MonoBehaviour:

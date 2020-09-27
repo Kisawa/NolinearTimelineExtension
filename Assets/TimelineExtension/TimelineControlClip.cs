@@ -1,7 +1,5 @@
 ﻿#pragma warning disable 0649
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine.Playables;
 
@@ -14,36 +12,10 @@ namespace UnityEngine.Timeline
         public string Label;
         public bool Controller;
         public TimelineControlOperationType ControlType;
+        public TimelineControlTimingType ControlTimingType;
         public float JumpFrame;
         public string JumpLabel;
         public bool Condition;
-
-        #region EditorUes
-        [SerializeField] TimelineControlTrack track;
-        [SerializeField] MonoBehaviour trackBinding;
-        [SerializeField] int condition_index;
-        [SerializeField] floatEnum float_enum;
-        [SerializeField] float float_val;
-        [SerializeField] intEnum int_enum;
-        [SerializeField] int int_val;
-        [SerializeField] boolEnum bool_enum;
-        [SerializeField] string conditionName;
-
-        [SerializeField] clipEventData onEnter;
-        [SerializeField] clipEventData onFrame;
-        [SerializeField] clipEventData onTrigger;
-        [SerializeField] clipEventData onPass;
-        #endregion
-
-#if UNITY_EDITOR
-        bool marker;
-        string label;
-        bool controller;
-        TimelineControlOperationType controlType;
-        float jumpFrame;
-        string jumpLabel;
-        bool condition;
-#endif
 
         public ClipCaps clipCaps
         {
@@ -76,6 +48,7 @@ namespace UnityEngine.Timeline
                     label = Label;
                     controller = Controller;
                     controlType = ControlType;
+                    controlTimingType = ControlTimingType;
                     jumpFrame = JumpFrame;
                     jumpLabel = JumpLabel;
                     condition = Condition;
@@ -85,6 +58,7 @@ namespace UnityEngine.Timeline
                     Label = label;
                     Controller = controller;
                     ControlType = controlType;
+                    ControlTimingType = controlTimingType;
                     JumpFrame = jumpFrame;
                     JumpLabel = jumpLabel;
                     Condition = condition;
@@ -93,11 +67,39 @@ namespace UnityEngine.Timeline
                     break;
             }
         }
+
+        bool marker;
+        string label;
+        bool controller;
+        TimelineControlOperationType controlType;
+        TimelineControlTimingType controlTimingType;
+        float jumpFrame;
+        string jumpLabel;
+        bool condition;
 #endif
+
+        #region EditorUes
+        [SerializeField] TimelineControlTrack track;
+        [SerializeField] MonoBehaviour trackBinding;
+        [SerializeField] int condition_index;
+        [SerializeField] floatEnum float_enum;
+        [SerializeField] float float_val;
+        [SerializeField] intEnum int_enum;
+        [SerializeField] int int_val;
+        [SerializeField] boolEnum bool_enum;
+        [SerializeField] string conditionName;
+
+        [SerializeField] clipEventData onEnter;
+        [SerializeField] clipEventData onFrame;
+        [SerializeField] clipEventData onTrigger;
+        [SerializeField] clipEventData onPass;
+        #endregion
     }
 
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
     public class ConditionAttribute : Attribute { }
+
+    public enum TimelineControlTimingType { End, Frame, Start }
 
     public enum TimelineControlOperationType { Pause, Repeat, JumpToFrame, JumpToMarker }
 

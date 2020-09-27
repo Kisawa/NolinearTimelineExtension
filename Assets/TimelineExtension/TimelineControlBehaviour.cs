@@ -12,6 +12,8 @@ namespace UnityEngine.Timeline
             MonoBehaviour trackBinding;
             PlayableDirector director;
             Func<bool> condition = () => false;
+            FieldInfo conditionField;
+            PropertyInfo conditionProperty;
             (MethodInfo, object[]) onEnter;
             (MethodInfo, object[]) onFrame;
             (MethodInfo, object[]) onTrigger;
@@ -33,42 +35,24 @@ namespace UnityEngine.Timeline
             {
                 base.OnBehaviourPlay(playable, info);
                 if (Math.Abs(playable.GetTime()) < 0.01f)
+                {
                     invokeBindingMethod(onEnter);
+                    if (clip.ControlTimingType == TimelineControlTimingType.Start)
+                    {
+                        if (clip.ControlType == TimelineControlOperationType.Repeat)
+                            Debug.LogWarning("TimelineController: Please check your clip controller. There is a clip controller timing is on clip Start, but the controller type still is Repeat so this controller won't used");
+                        else
+                            control(playable);
+                    }
+                }
             }
 
             public override void OnBehaviourPause(Playable playable, FrameData info)
             {
                 if (Math.Abs(playable.GetTime() - playable.GetDuration()) < 0.01f)
                 {
-                    if (condition())
-                    {
-                        switch (clip.ControlType)
-                        {
-                            case TimelineControlOperationType.Pause:
-                                director.Pause();
-                                break;
-                            case TimelineControlOperationType.Repeat:
-                                director.time -= playable.GetTime();
-                                break;
-                            case TimelineControlOperationType.JumpToFrame:
-                                director.time = clip.JumpFrame / clip.track.timelineAsset.editorSettings.fps;
-                                break;
-                            case TimelineControlOperationType.JumpToMarker:
-                                if (!string.IsNullOrEmpty(clip.JumpLabel))
-                                {
-                                    foreach (var item in clip.track.GetClips())
-                                    {
-                                        TimelineControlClip clip = item.asset as TimelineControlClip;
-                                        if (clip.Marker && clip.Label == clip.JumpLabel)
-                                            director.time = item.start;
-                                    }
-                                }
-                                break;
-                        }
-                        invokeBindingMethod(onTrigger);
-                        return;
-                    }
-                    invokeBindingMethod(onPass);
+                    if(clip.ControlTimingType != TimelineControlTimingType.End || !control(playable))
+                        invokeBindingMethod(onPass);
                 }
             }
 
@@ -77,6 +61,42 @@ namespace UnityEngine.Timeline
                 base.ProcessFrame(playable, info, playerData);
                 trackBinding = playerData as TimelineController;
                 invokeBindingMethod(onFrame);
+                if (clip.ControlTimingType == TimelineControlTimingType.Frame)
+                    control(playable);
+            }
+
+            bool control(Playable playable)
+            {
+                if (condition())
+                {
+                    switch (clip.ControlType)
+                    {
+                        case TimelineControlOperationType.Pause:
+                            director.Pause();
+                            break;
+                        case TimelineControlOperationType.Repeat:
+                            director.time -= playable.GetTime();
+                            break;
+                        case TimelineControlOperationType.JumpToFrame:
+                            director.time = clip.JumpFrame / clip.track.timelineAsset.editorSettings.fps;
+                            break;
+                        case TimelineControlOperationType.JumpToMarker:
+                            if (!string.IsNullOrEmpty(clip.JumpLabel))
+                            {
+                                foreach (var item in clip.track.GetClips())
+                                {
+                                    TimelineControlClip clip = item.asset as TimelineControlClip;
+                                    if (clip.Marker && clip.Label == clip.JumpLabel)
+                                        director.time = item.start;
+                                }
+                            }
+                            break;
+                    }
+                    invokeBindingMethod(onTrigger);
+                    return true;
+                }
+                else
+                    return false;
             }
 
             void invokeBindingMethod((MethodInfo, object[]) data) 
@@ -207,45 +227,47 @@ namespace UnityEngine.Timeline
                         {
                             bool res = false;
                             Type bindType = trackBinding.GetType();
-                            FieldInfo targetField = bindType.GetField(clip.conditionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                            PropertyInfo targetProperty = bindType.GetProperty(clip.conditionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                            if(conditionField == null)
+                                conditionField = bindType.GetField(clip.conditionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                            if(conditionProperty == null)
+                                conditionProperty = bindType.GetProperty(clip.conditionName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                             Type targetType = typeof(string);
                             float _float_val = 0;
                             int _int_val = 0;
                             bool _bool_val = false;
-                            if (targetField == null)
+                            if (conditionField == null)
                             {
-                                if (targetProperty != null)
+                                if (conditionProperty != null)
                                 {
-                                    targetType = targetProperty.PropertyType;
+                                    targetType = conditionProperty.PropertyType;
                                     if (targetType == typeof(float))
                                     {
-                                        _float_val = (float)targetProperty.GetValue(trackBinding);
+                                        _float_val = (float)conditionProperty.GetValue(trackBinding);
                                     }
                                     if (targetType == typeof(int))
                                     {
-                                        _int_val = (int)targetProperty.GetValue(trackBinding);
+                                        _int_val = (int)conditionProperty.GetValue(trackBinding);
                                     }
                                     if (targetType == typeof(bool))
                                     {
-                                        _bool_val = (bool)targetProperty.GetValue(trackBinding);
+                                        _bool_val = (bool)conditionProperty.GetValue(trackBinding);
                                     }
                                 }
                             }
                             else
                             {
-                                targetType = targetField.FieldType;
+                                targetType = conditionField.FieldType;
                                 if (targetType == typeof(float))
                                 {
-                                    _float_val = (float)targetField.GetValue(trackBinding);
+                                    _float_val = (float)conditionField.GetValue(trackBinding);
                                 }
                                 if (targetType == typeof(int))
                                 {
-                                    _int_val = (int)targetField.GetValue(trackBinding);
+                                    _int_val = (int)conditionField.GetValue(trackBinding);
                                 }
                                 if (targetType == typeof(bool))
                                 {
-                                    _bool_val = (bool)targetField.GetValue(trackBinding);
+                                    _bool_val = (bool)conditionField.GetValue(trackBinding);
                                 }
                             }
 
